@@ -1,0 +1,28 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Review {
+  id          String   @id @default(uuid())
+  userId      String
+  productId   String
+  orderItemId String
+  rating      Int
+  content     String   @db.Text
+  createdAt   DateTime @default(now())
+
+  images ReviewImage[]
+}
+
+model ReviewImage {
+  id       String @id @default(uuid())
+  reviewId String
+  url      String
+
+  review Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+}
