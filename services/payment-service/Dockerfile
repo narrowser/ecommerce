@@ -1,8 +1,9 @@
 FROM node:20-alpine
 WORKDIR /app
-COPY package.json package-lock.json* ./
+COPY packages/shared/ ./packages/shared/
+COPY services/payment-service/package.json services/payment-service/package-lock.json* ./
 RUN npm install
-COPY . .
+COPY services/payment-service/ .
 RUN npm run prisma:generate
 RUN npm run build
 EXPOSE 3004

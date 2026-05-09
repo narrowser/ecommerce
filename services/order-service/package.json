@@ -10,7 +10,7 @@
     "prisma:push": "prisma db push"
   },
   "dependencies": {
-    "@ecommerce/shared": "*",
+    "@ecommerce/shared": "file:../../packages/shared",
     "@prisma/client": "^5.14.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
