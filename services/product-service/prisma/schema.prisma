@@ -1,0 +1,53 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id       String     @id @default(uuid())
+  name     String
+  slug     String     @unique
+  parentId String?
+  image    String?
+  sortOrder Int       @default(0)
+  isActive Boolean    @default(true)
+
+  parent   Category?  @relation("CategoryTree", fields: [parentId], references: [id])
+  children Category[] @relation("CategoryTree")
+  products Product[]
+}
+
+model Product {
+  id            String     @id @default(uuid())
+  supplierId    String
+  categoryId    String
+  name          String
+  description   String     @db.Text
+  price         Decimal    @db.Decimal(10, 2)
+  comparePrice  Decimal?   @db.Decimal(10, 2)
+  images        Json
+  specs         Json?
+  isActive      Boolean    @default(true)
+  avgRating     Float      @default(0)
+  reviewCount   Int        @default(0)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  category  Category   @relation(fields: [categoryId], references: [id])
+  inventory Inventory?
+}
+
+model Inventory {
+  id                String   @id @default(uuid())
+  productId         String   @unique
+  stock             Int      @default(0)
+  lockedStock       Int      @default(0)
+  lowStockThreshold Int      @default(10)
+  updatedAt         DateTime @updatedAt
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
