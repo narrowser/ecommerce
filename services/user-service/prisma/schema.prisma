@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  CUSTOMER
+  ADMIN
+  SUPPLIER
+}
+
+enum SupplierStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         UserRole @default(CUSTOMER)
+  avatar       String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  addresses       UserAddress[]
+  supplierProfile SupplierProfile?
+}
+
+model UserAddress {
+  id        String  @id @default(uuid())
+  userId    String
+  label     String  @default("Home")
+  receiver  String
+  phone     String
+  address   String
+  city      String
+  state     String
+  zipCode   String
+  isDefault Boolean @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model SupplierProfile {
+  id           String         @id @default(uuid())
+  userId       String         @unique
+  companyName  String
+  contactName  String
+  contactPhone String
+  licenseNo    String
+  status       SupplierStatus @default(PENDING)
+  verifiedAt   DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
